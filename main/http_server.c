@@ -59,6 +59,12 @@ extern const uint8_t app_css_start[]                asm("_binary_app_css_start")
 extern const uint8_t app_css_end[]                 asm("_binary_app_css_end");
 extern const uint8_t app_js_start[]                 asm("_binary_app_js_start");
 extern const uint8_t app_js_end[]                  asm("_binary_app_js_end");
+extern const uint8_t settings_html_start[]             asm("_binary_settings_html_start");
+extern const uint8_t settings_html_end[]              asm("_binary_settings_html_end");
+extern const uint8_t settings_css_start[]                asm("_binary_settings_css_start");
+extern const uint8_t settings_css_end[]                 asm("_binary_settings_css_end");
+extern const uint8_t settings_js_start[]                 asm("_binary_settings_js_start");
+extern const uint8_t settings_js_end[]                  asm("_binary_settings_js_end");
 extern const uint8_t favicon_ico_start[]            asm("_binary_favicon_ico_start");
 extern const uint8_t favicon_ico_end[]             asm("_binary_favicon_ico_end");
 
@@ -160,6 +166,21 @@ static esp_err_t http_server_index_html_handler(httpd_req_t *req)
 
     httpd_resp_set_type(req, "text/html");
     httpd_resp_send(req, (const char *)index_html_start, index_html_end - index_html_start);
+
+    return ESP_OK;
+}
+
+/**
+ * Sends the settings.html page
+ * @param req HTTP request for which the uri needs to be handled.
+ * @return ESP_OK
+ */
+static esp_err_t http_server_settings_html_handler(httpd_req_t *req)
+{
+    ESP_LOGI(TAG, "settings.html requested");
+
+    httpd_resp_set_type(req, "text/html");
+    httpd_resp_send(req, (const char *)settings_html_start, settings_html_end - settings_html_start);
 
     return ESP_OK;
 }
@@ -302,6 +323,21 @@ static esp_err_t http_server_app_css_handler(httpd_req_t *req)
 }
 
 /**
+ * Sends the settings.css page
+ * @param req HTTP request for which the uri needs to be handled.
+ * @return ESP_OK
+ */
+static esp_err_t http_server_settings_css_handler(httpd_req_t *req)
+{
+    ESP_LOGI(TAG, "settings.css requested");
+
+    httpd_resp_set_type(req, "text/css");
+    httpd_resp_send(req, (const char *)settings_css_start, settings_css_end - settings_css_start);
+
+    return ESP_OK;
+}
+
+/**
  * Sends the app.js page
  * @param req HTTP request for which the uri needs to be handled.
  * @return ESP_OK
@@ -312,6 +348,21 @@ static esp_err_t http_server_app_js_handler(httpd_req_t *req)
 
     httpd_resp_set_type(req, "application/javascript");
     httpd_resp_send(req, (const char *)app_js_start, app_js_end - app_js_start);
+
+    return ESP_OK;
+}
+
+/**
+ * Sends the settings.js page
+ * @param req HTTP request for which the uri needs to be handled.
+ * @return ESP_OK
+ */
+static esp_err_t http_server_settings_js_handler(httpd_req_t *req)
+{
+    ESP_LOGI(TAG, "settings.js requested");
+
+    httpd_resp_set_type(req, "application/javascript");
+    httpd_resp_send(req, (const char *)settings_js_start, settings_js_end - settings_js_start);
 
     return ESP_OK;
 }
@@ -461,6 +512,15 @@ static httpd_handle_t http_server_configure(void)
         };
         httpd_register_uri_handler(http_server_handle, &index_html);
 
+        //register settings.html handler
+        httpd_uri_t settings_html = {
+                .uri = "/settings.html",
+                .method = HTTP_GET,
+                .handler = http_server_settings_html_handler,
+                .user_ctx = NULL
+        };
+        httpd_register_uri_handler(http_server_handle, &settings_html);
+
         //register app.css handler
         httpd_uri_t app_css = {
                 .uri = "/app.css",
@@ -470,6 +530,15 @@ static httpd_handle_t http_server_configure(void)
         };
         httpd_register_uri_handler(http_server_handle, &app_css);
 
+        //register settings.css handler
+        httpd_uri_t settings_css = {
+                .uri = "/settings.css",
+                .method = HTTP_GET,
+                .handler = http_server_settings_css_handler,
+                .user_ctx = NULL
+        };
+        httpd_register_uri_handler(http_server_handle, &settings_css);
+
         //register app.js handler
         httpd_uri_t app_js = {
                 .uri = "/app.js",
@@ -478,6 +547,15 @@ static httpd_handle_t http_server_configure(void)
                 .user_ctx = NULL
         };
         httpd_register_uri_handler(http_server_handle, &app_js);
+
+        //register settings.js handler
+        httpd_uri_t settings_js = {
+                .uri = "/settings.js",
+                .method = HTTP_GET,
+                .handler = http_server_settings_js_handler,
+                .user_ctx = NULL
+        };
+        httpd_register_uri_handler(http_server_handle, &settings_js);
 
         //register favicon.ico handler
         httpd_uri_t favicon_ico = {
