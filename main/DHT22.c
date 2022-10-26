@@ -80,22 +80,22 @@ void errorHandler(int response)
 	switch(response) {
 
 		case DHT_READ_ERROR :
-			ESP_LOGE(TAG, "Read error\n");
+			//ESP_LOGE(TAG, "Read error\n");
 			break;
 	
 		case DHT_TIMEOUT_ERROR :
-			ESP_LOGE( TAG, "Sensor Timeout\n" );
+			//ESP_LOGE( TAG, "Sensor Timeout\n" );
 			break;
 
 		case DHT_CHECKSUM_ERROR:
-			ESP_LOGE( TAG, "CheckSum error\n" );
+			//ESP_LOGE( TAG, "CheckSum error\n" );
 			break;
 
 		case DHT_OK:
 			break;
 
 		default :
-			ESP_LOGE( TAG, "Unknown error\n" );
+			//ESP_LOGE( TAG, "Unknown error\n" );
 	}
 }
 
@@ -294,19 +294,19 @@ temperature1=0.0;
 static void DHT22_task0(void *pvParameter)
 {
 	setDHTgpio(DHT0_GPIO, DHT1_GPIO);
-	printf("Starting DHT task\n\n");
+	//printf("Starting DHT task\n\n");
 
 	for (;;)
 	{
 		
-		printf("=== Reading DHTs ===\n");
+		//printf("=== Reading DHTs ===\n");
 
 		int ret1 = readDHT(0);
 
 		errorHandler(ret1);
 
-		printf("Hum %.1f\t%.1f\n", getHumidity(0), getHumidity(1));
-		printf("Tmp %.1f\t%.1f\n", getTemperature(0), getTemperature(1));
+		//printf("Hum %.1f\t%.1f\n", getHumidity(0), getHumidity(1));
+		//printf("Tmp %.1f\t%.1f\n", getTemperature(0), getTemperature(1));
 
 		// Wait at least 2 seconds before reading again
 		// The interval of the whole process must be more than 2 seconds
@@ -316,19 +316,19 @@ static void DHT22_task0(void *pvParameter)
 static void DHT22_task1(void *pvParameter)
 {
 	setDHTgpio(DHT0_GPIO, DHT1_GPIO);
-	printf("Starting DHT task\n\n");
+	//printf("Starting DHT task\n\n");
 
 	for (;;)
 	{
 		
-		printf("=== Reading DHTs ===\n");
+		//printf("=== Reading DHTs ===\n");
 
 		int ret1 = readDHT(1);
 
 		errorHandler(ret1);
 
-		printf("Hum %.1f\t%.1f\n", getHumidity(0), getHumidity(1));
-		printf("Tmp %.1f\t%.1f\n", getTemperature(0), getTemperature(1));
+		//printf("Hum %.1f\t%.1f\n", getHumidity(0), getHumidity(1));
+		//printf("Tmp %.1f\t%.1f\n", getTemperature(0), getTemperature(1));
 
 		// Wait at least 2 seconds before reading again
 		// The interval of the whole process must be more than 2 seconds
