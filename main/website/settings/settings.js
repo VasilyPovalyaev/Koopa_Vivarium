@@ -184,7 +184,7 @@
      //get the ssid and password
      selectedSSID = $("#connect_ssid").val();
      pwd = $("#connect_pass").val();
-     getConnectInfo
+     getConnectInfo();
  
      $.ajax({
          url: '/wifiConnect.json',
