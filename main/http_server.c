@@ -237,7 +237,7 @@ esp_err_t http_server_OTA_update_handler(httpd_req_t *req)
             }
             else
             {
-                printf("httpd_server_OTA_update_handler: Writing to partition subtype %d at offset 0x%lx\r\n", update_partition->subtype, update_partition->address);
+                printf("httpd_server_OTA_update_handler: Writing to partition subtype %d at offset 0x%x\r\n", update_partition->subtype, update_partition->address);
             }
             //write the first part of the data
             esp_ota_write(ota_handle, body_start_p, body_part_len);
@@ -258,7 +258,7 @@ esp_err_t http_server_OTA_update_handler(httpd_req_t *req)
         if (esp_ota_set_boot_partition(update_partition) == ESP_OK)
         {
             const esp_partition_t *boot_partition = esp_ota_get_boot_partition();
-            ESP_LOGI(TAG, "httpd_server_OTA_update_handler: Next boot partition subtype %d at offset 0x%lx", boot_partition->subtype, boot_partition->address);
+            ESP_LOGI(TAG, "httpd_server_OTA_update_handler: Next boot partition subtype %d at offset 0x%x", boot_partition->subtype, boot_partition->address);
             flash_successful = true;
         }
         else
@@ -435,6 +435,7 @@ static esp_err_t http_server_wifi_connect_json_handler(httpd_req_t *req)
     //Update the Wifi networks configuration and let the wifi application know
 
     wifi_config_t* wifi_config = wifi_app_get_wifi_config();
+    memset(wifi_config, 0, sizeof(wifi_config_t));
     memcpy(wifi_config->sta.ssid, ssid_str, len_ssid);
     memcpy(wifi_config->sta.password, pass_str, len_pass);
     wifi_app_send_message(WIFI_APP_MSG_CONNECTING_FROM_HTTP_SERVER);
@@ -453,7 +454,7 @@ static esp_err_t http_server_wifi_connect_status_json_handler(httpd_req_t *req)
     ESP_LOGI(TAG, "/wifiConnectStatus requested");
     char statusJSON[100];
 
-    sprintf(statusJSON, "{\"wifi-connect_status\":%d}", g_wifi_connect_status);
+    sprintf(statusJSON, "{\"wifi_connect_status\":%d}", g_wifi_connect_status);
     httpd_resp_set_type(req, "application/json");
     httpd_resp_send(req, statusJSON, strlen(statusJSON));
 

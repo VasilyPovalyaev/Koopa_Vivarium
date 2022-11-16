@@ -168,7 +168,7 @@
  /**
   * starts the interval for checking the connection status
   */
- function startlWifiConnectStatusInterva()
+ function startWifiConnectStatusInterval()
  {
      wifiConnectInterval = setInterval(getWifiConnectStatus, 2800);
  

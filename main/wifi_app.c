@@ -175,7 +175,7 @@ static void wifi_app_soft_ap_config(void)
  */
 static void wifi_app_connect_sta(void)
 {
-    ESP_ERROR_CHECK(esp_wifi_get_config(ESP_IF_WIFI_STA, wifi_app_get_wifi_config()));
+    ESP_ERROR_CHECK(esp_wifi_set_config(ESP_IF_WIFI_STA, wifi_app_get_wifi_config()));
     ESP_ERROR_CHECK(esp_wifi_connect());
 }
 
