@@ -1,4 +1,4 @@
-#include "freertos/freeRTOS.h"
+#include "freertos/FreeRTOS.h"
 #include "freertos/event_groups.h"
 #include "freertos/task.h"
 
@@ -175,10 +175,7 @@ static void wifi_app_soft_ap_config(void)
  */
 static void wifi_app_connect_sta(void)
 {
-    wifi_config_t* wifi_config = wifi_app_get_wifi_config();
-    ESP_LOGI(TAG, "ssid: %s", wifi_config->sta.ssid);
-    ESP_LOGI(TAG, "password: %s", wifi_config->sta.password);
-    ESP_ERROR_CHECK(esp_wifi_get_config(WIFI_IF_STA, wifi_app_get_wifi_config()));
+    ESP_ERROR_CHECK(esp_wifi_set_config(ESP_IF_WIFI_STA, wifi_app_get_wifi_config()));
     ESP_ERROR_CHECK(esp_wifi_connect());
 }
 

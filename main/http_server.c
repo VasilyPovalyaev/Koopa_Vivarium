@@ -469,7 +469,7 @@ static esp_err_t http_server_wifi_connect_json_handler(httpd_req_t *req)
     //Update the Wifi networks configuration and let the wifi application know
 
     wifi_config_t* wifi_config = wifi_app_get_wifi_config();
-    memset(wifi_config, 0x00, sizeof(wifi_config_t));
+    memset(wifi_config, 0, sizeof(wifi_config_t));
     memcpy(wifi_config->sta.ssid, ssid_str, len_ssid);
     memcpy(wifi_config->sta.password, pass_str, len_pass);
     wifi_app_send_message(WIFI_APP_MSG_CONNECTING_FROM_HTTP_SERVER);
