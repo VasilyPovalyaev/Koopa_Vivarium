@@ -80,15 +80,15 @@ void errorHandler(int response)
 	switch(response) {
 
 		case DHT_READ_ERROR :
-			ESP_LOGE(TAG, "Read error\n");
+			//ESP_LOGE(TAG, "Read error\n");
 			break;
 	
 		case DHT_TIMEOUT_ERROR :
-			ESP_LOGE( TAG, "Sensor Timeout\n" );
+			//ESP_LOGE( TAG, "Sensor Timeout\n" );
 			break;
 
 		case DHT_CHECKSUM_ERROR:
-			ESP_LOGE( TAG, "CheckSum error\n" );
+			//ESP_LOGE( TAG, "CheckSum error\n" );
 			break;
 
 		case DHT_OK:
@@ -294,12 +294,12 @@ temperature1=0.0;
 static void DHT22_task0(void *pvParameter)
 {
 	setDHTgpio(DHT0_GPIO, DHT1_GPIO);
-	printf("Starting DHT task\n\n");
+	//printf("Starting DHT task\n\n");
 
 	for (;;)
 	{
 		
-		printf("=== Reading DHTs ===\n");
+		//printf("=== Reading DHTs ===\n");
 
 		int ret1 = readDHT(0);
 
@@ -316,12 +316,12 @@ static void DHT22_task0(void *pvParameter)
 static void DHT22_task1(void *pvParameter)
 {
 	setDHTgpio(DHT0_GPIO, DHT1_GPIO);
-	printf("Starting DHT task\n\n");
+	//printf("Starting DHT task\n\n");
 
 	for (;;)
 	{
 		
-		printf("=== Reading DHTs ===\n");
+		//printf("=== Reading DHTs ===\n");
 
 		int ret1 = readDHT(1);
 

@@ -10,6 +10,7 @@
   */
  $(document).ready(function(){
      getUpdateStatus();
+     getConnectInfo();
      $("#connect_wifi").on("click", function(){
          checkCredentials();
      });
@@ -160,6 +161,7 @@
          {
              document.getElementById("wifi_connect_status").innerHTML = "<h4 class='gr'>Connection Success!</h4>";
              stopWifiConnectStatusInterval();
+             getConnectInfo()
          }
      }
  
@@ -168,7 +170,7 @@
  /**
   * starts the interval for checking the connection status
   */
- function startlWifiConnectStatusInterva()
+ function startWifiConnectStatusInterval()
  {
      wifiConnectInterval = setInterval(getWifiConnectStatus, 2800);
  
@@ -182,6 +184,7 @@
      //get the ssid and password
      selectedSSID = $("#connect_ssid").val();
      pwd = $("#connect_pass").val();
+     getConnectInfo();
  
      $.ajax({
          url: '/wifiConnect.json',
@@ -245,4 +248,28 @@
      {
          x.type = "password"
      }
+ }
+
+ /**
+  * Gets the connection info for dispalying on the webpage
+  */
+
+ function getConnectInfo()
+ {
+    $.getJSON('/wifiConnectInfo.json', function(data)
+    {
+        $("connected_ap_label").html("Connected to: ");
+        $("connected_ap").text(data["ap"]);
+
+        $("ip_address_label").html("IP Adress: ");
+        $("wifi_connect_ip").text(data["ip"]);
+
+        $("netmask_label").html("Netmask: ");
+        $("wifi_connect_netmask").text(data["netmask"]);
+
+        $("gateway_label").html("Gateway: ");
+        $("wifi_connect_gateway").text(data["gateway"]);
+
+        document.getElementById('disconnect_wifi').style.display = 'block';
+    });
  }
