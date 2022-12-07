@@ -184,8 +184,7 @@ humidity1=0.0;
 temperature1=0.0;
 }
 
-	for (int k = 0; k<MAXdhtData; k++) 
-		dhtData[k] = 0;
+	for (int k = 0; k<MAXdhtData; k++){dhtData[k] = 0;}
 
 	// == Send start signal to DHT sensor ===========
 
