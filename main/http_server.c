@@ -488,7 +488,7 @@ static esp_err_t http_server_wifi_get_connect_info_json_handler(httpd_req_t *req
         esp_ip4addr_ntoa(&ip_info.netmask, netmask, IP4ADDR_STRLEN_MAX);
         esp_ip4addr_ntoa(&ip_info.gw, gateway, IP4ADDR_STRLEN_MAX);
 
-        sprintf(ipInfoJSON, "{\"ip\":\"%s\",\"netmask\":\"%s\",\"gateway\":\"%s\"ap\":\"%s\"}\")", ip, netmask, gateway, ssid);
+        sprintf(ipInfoJSON, "{\"ip\":\"%s\",\"netmask\":\"%s\",\"gateway\":\"%s\"ap\":\"%s\"}", ip, netmask, gateway, ssid);
     }
     httpd_resp_set_type(req, "application/json");
     httpd_resp_send(req, ipInfoJSON, strlen(ipInfoJSON));
