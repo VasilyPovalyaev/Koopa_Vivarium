@@ -304,8 +304,8 @@ static void DHT22_task0(void *pvParameter)
 
 		errorHandler(ret1);
 
-		printf("Hum %.1f\t%.1f\n", getHumidity(0), getHumidity(1));
-		printf("Tmp %.1f\t%.1f\n", getTemperature(0), getTemperature(1));
+		// printf("Hum %.1f\t%.1f\n", getHumidity(0), getHumidity(1));
+		// printf("Tmp %.1f\t%.1f\n", getTemperature(0), getTemperature(1));
 
 		// Wait at least 2 seconds before reading again
 		// The interval of the whole process must be more than 2 seconds
@@ -326,8 +326,8 @@ static void DHT22_task1(void *pvParameter)
 
 		errorHandler(ret1);
 
-		printf("Hum %.1f\t%.1f\n", getHumidity(0), getHumidity(1));
-		printf("Tmp %.1f\t%.1f\n", getTemperature(0), getTemperature(1));
+		// printf("Hum %.1f\t%.1f\n", getHumidity(0), getHumidity(1));
+		// printf("Tmp %.1f\t%.1f\n", getTemperature(0), getTemperature(1));
 
 		// Wait at least 2 seconds before reading again
 		// The interval of the whole process must be more than 2 seconds

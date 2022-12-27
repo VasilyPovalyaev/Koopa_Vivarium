@@ -6,6 +6,7 @@
 #include "esp_wifi.h"
 
 #include "DHT22.h"
+#include "relays.h"
 #include "http_server.h"
 #include "tasks_common.h"
 #include "wifi_app.h"
@@ -399,6 +400,69 @@ static esp_err_t http_server_get_dht_sensor_readings_json_handler(httpd_req_t *r
 }
 
 /**
+ * lightsON handler
+*/
+static esp_err_t http_server_lights_on_handler(httpd_req_t* req)
+{
+    ESP_LOGI(TAG, "/lightsON requested");
+    if (get_light_state() == 0){
+        set_lights(1);
+    }
+    httpd_resp_send(req, "ok", 2);
+    return ESP_OK;
+}
+/**
+ * lightsOFF handler
+*/
+static esp_err_t http_server_lights_off_handler(httpd_req_t* req)
+{
+    ESP_LOGI(TAG, "/lightsOFF requested");
+    if(get_light_state() == 1){
+        set_lights(0);
+    }
+    httpd_resp_send(req, "ok", 2);
+    return ESP_OK;
+}
+/**
+ * heaterON handler
+*/
+static esp_err_t http_server_heater_on_handler(httpd_req_t* req)
+{
+    ESP_LOGI(TAG, "/heaterON requested");
+    if (get_heater_state() == 0){
+        set_heater(1);
+    }
+    httpd_resp_send(req, "ok", 2);
+    return ESP_OK;
+}
+/**
+ * heaterOFF handler
+*/
+static esp_err_t http_server_heater_off_handler(httpd_req_t* req)
+{
+    ESP_LOGI(TAG, "/heaterOFF requested");
+    if(get_heater_state() == 1){
+        set_heater(0);
+    }
+    httpd_resp_send(req, "ok", 2);
+    return ESP_OK;
+}
+/**
+ * Checkbox info handler
+*/
+static esp_err_t http_server_checkbox_info_handler(httpd_req_t* req)
+{
+    ESP_LOGI(TAG, "/checkbox.json requested");
+
+    char checkboxJSON[200];
+    sprintf(checkboxJSON, "{\"lights\":\"%d\",\"heater\":\"%d\"}", get_light_state(), get_heater_state());
+    
+    httpd_resp_set_type(req, "application/json");
+    httpd_resp_send(req, checkboxJSON, strlen(checkboxJSON));
+    
+    return ESP_OK;
+}
+/**
  * Connect info handler
  */
 static esp_err_t http_server_wifi_get_connect_info_json_handler(httpd_req_t *req)
@@ -630,6 +694,15 @@ static httpd_handle_t http_server_configure(void)
         };
         httpd_register_uri_handler(http_server_handle, &dht_sensor_json);
 
+        //register checkbox.json handler
+        httpd_uri_t checkbox_json = {
+            .uri = "/checkbox.json",
+            .method = HTTP_GET,
+            .handler = http_server_checkbox_info_handler,
+            .user_ctx = NULL
+        };
+        httpd_register_uri_handler(http_server_handle, &checkbox_json);
+
         //register wifi connect json
         httpd_uri_t wifi_connect_json = {
             .uri = "/wifiConnect.json",
@@ -656,6 +729,43 @@ static httpd_handle_t http_server_configure(void)
             .user_ctx = NULL
         };
         httpd_register_uri_handler(http_server_handle, &wifi_connect_info_json);
+
+        //register ligths on 
+        httpd_uri_t lights_on = {
+            .uri = "/lightsON",
+            .method = HTTP_POST,
+            .handler = http_server_lights_on_handler,
+            .user_ctx = NULL
+        };
+        httpd_register_uri_handler(http_server_handle, &lights_on);
+
+        //register lights off 
+        httpd_uri_t lights_off = {
+            .uri = "/lightsOFF",
+            .method = HTTP_POST,
+            .handler = http_server_lights_off_handler,
+            .user_ctx = NULL
+        };
+        httpd_register_uri_handler(http_server_handle, &lights_off);
+
+        //register heater on 
+        httpd_uri_t heater_on = {
+            .uri = "/heaterON",
+            .method = HTTP_POST,
+            .handler = http_server_heater_on_handler,
+            .user_ctx = NULL
+        };
+        httpd_register_uri_handler(http_server_handle, &heater_on);
+
+        //register heater off 
+        httpd_uri_t heater_off = {
+            .uri = "/heaterOFF",
+            .method = HTTP_POST,
+            .handler = http_server_heater_off_handler,
+            .user_ctx = NULL
+        };
+        httpd_register_uri_handler(http_server_handle, &heater_off);
+
 
         return http_server_handle;
     }

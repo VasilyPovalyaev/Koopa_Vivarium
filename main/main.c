@@ -2,6 +2,7 @@
 #include "nvs_flash.h"
 
 #include "DHT22.h"
+#include "relays.h"
 #include "wifi_app.h"
 
 void app_main(void)
@@ -22,5 +23,7 @@ void app_main(void)
     //Start DHT22 tsak
     DHT22_task0_start();
     DHT22_task1_start();
-    
+
+    //Init relays
+    setup_relays();    
 }

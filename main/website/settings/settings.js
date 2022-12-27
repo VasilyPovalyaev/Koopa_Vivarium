@@ -258,17 +258,17 @@
  {
     $.getJSON('/wifiConnectInfo.json', function(data)
     {
-        $("connected_ap_label").html("Connected to: ");
-        $("connected_ap").text(data["ap"]);
+        $("#connected_ap_label").html("Connected to: ");
+        $("#connected_ap").text(data["ap"]);
 
-        $("ip_address_label").html("IP Adress: ");
-        $("wifi_connect_ip").text(data["ip"]);
+        $("#ip_address_label").html("IP Adress: ");
+        $("#wifi_connect_ip").text(data["ip"]);
 
-        $("netmask_label").html("Netmask: ");
-        $("wifi_connect_netmask").text(data["netmask"]);
+        $("#netmask_label").html("Netmask: ");
+        $("#wifi_connect_netmask").text(data["netmask"]);
 
-        $("gateway_label").html("Gateway: ");
-        $("wifi_connect_gateway").text(data["gateway"]);
+        $("#gateway_label").html("Gateway: ");
+        $("#wifi_connect_gateway").text(data["gateway"]);
 
         document.getElementById('disconnect_wifi').style.display = 'block';
     });
