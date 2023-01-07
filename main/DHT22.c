@@ -34,10 +34,10 @@
 static const char* TAG = "DHT";
 
 int DHTgpio[2];				
-float humidity0;
-float humidity1;
-float temperature0;
-float temperature1;
+float humidity0 = 0;
+float humidity1 = 0;
+float temperature0 = 0;
+float temperature1 = 0;
 
 // == set the DHT used pin=========================================
 
@@ -176,13 +176,6 @@ uint8_t dhtData[MAXdhtData];
 uint8_t byteInx = 0;
 uint8_t bitInx = 7;
 
-if (idx == 0){
-	humidity0=0.0;
-	temperature0=0.0;
-}else{
-humidity1=0.0;
-temperature1=0.0;
-}
 
 	for (int k = 0; k<MAXdhtData; k++){dhtData[k] = 0;}
 
@@ -241,6 +234,13 @@ temperature1=0.0;
 		if (bitInx == 0) { bitInx = 7; ++byteInx; }
 		else bitInx--;
 	}
+	// == verify if checksum is ok ===========================================
+	// Checksum is the sum of Data 8 bits masked out 0xFF
+	
+	if (dhtData[4] != ((dhtData[0] + dhtData[1] + dhtData[2] + dhtData[3]) & 0xFF))
+	{
+		return DHT_CHECKSUM_ERROR;
+	}
 
 	// == get humidity from Data[0] and Data[1] ==========================
 	if(idx == 0)
@@ -277,14 +277,8 @@ temperature1=0.0;
 		if( dhtData[2] & 0x80 ) 			// negative temp, brrr it's freezing
 			temperature1 *= -1;
 	}
-	// == verify if checksum is ok ===========================================
-	// Checksum is the sum of Data 8 bits masked out 0xFF
-	
-	if (dhtData[4] == ((dhtData[0] + dhtData[1] + dhtData[2] + dhtData[3]) & 0xFF)) 
-		return DHT_OK;
 
-	else 
-		return DHT_CHECKSUM_ERROR;
+	return DHT_OK;
 }
 
 /**
