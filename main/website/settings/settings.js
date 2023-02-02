@@ -1,16 +1,16 @@
 /**
  * Add gobals here
  */
- var seconds 	= null;
- var otaTimerVar =  null;
- var wifiConnectInterval = null;
+ let seconds 	= null;
+ let otaTimerVar =  null;
+ let wifiConnectInterval = null;
  
  /**
   * Initialize functions here.
   */
  $(document).ready(function(){
      getUpdateStatus();
-     getConnectInfo();
+    //  getConnectInfo();
      $("#connect_wifi").on("click", function(){
          checkCredentials();
      });
@@ -21,8 +21,8 @@
   */        
  function getFileInfo() 
  {
-     var x = document.getElementById("selected_file");
-     var file = x.files[0];
+     let x = document.getElementById("selected_file");
+     let file = x.files[0];
  
      document.getElementById("file_info").innerHTML = "<h4>File: " + file.name + "<br>" + "Size: " + file.size + " bytes</h4>";
  }
@@ -33,17 +33,17 @@
  function updateFirmware() 
  {
      // Form Data
-     var formData = new FormData();
-     var fileSelect = document.getElementById("selected_file");
+     let formData = new FormData();
+     let fileSelect = document.getElementById("selected_file");
      
      if (fileSelect.files && fileSelect.files.length == 1) 
      {
-         var file = fileSelect.files[0];
+         let file = fileSelect.files[0];
          formData.set("file", file, file.name);
          document.getElementById("ota_update_status").innerHTML = "Uploading " + file.name + ", Firmware Update in Progress...";
  
          // Http Request
-         var request = new XMLHttpRequest();
+         let request = new XMLHttpRequest();
  
          request.upload.addEventListener("progress", updateProgress);
          request.open('POST', "/OTAupdate");
@@ -76,14 +76,14 @@
   */
  function getUpdateStatus() 
  {
-     var xhr = new XMLHttpRequest();
-     var requestURL = "/OTAstatus";
+     let xhr = new XMLHttpRequest();
+     let requestURL = "/OTAstatus";
      xhr.open('POST', requestURL, false);
      xhr.send('ota_update_status');
  
      if (xhr.readyState == 4 && xhr.status == 200) 
      {		
-         var response = JSON.parse(xhr.responseText);
+         let response = JSON.parse(xhr.responseText);
                          
           document.getElementById("latest_firmware").innerHTML = response.compile_date + " - " + response.compile_time
  
@@ -141,14 +141,14 @@
  
  function getWifiConnectStatus()
  {
-     var xhr = new XMLHttpRequest();
-     var requestURL = "/wifiConnectStatus";
+     let xhr = new XMLHttpRequest();
+     let requestURL = "/wifiConnectStatus";
      xhr.open('POST', requestURL, false);
      xhr.send('wifi_connect_status');
  
      if (xhr.readyState == 4 && xhr.status == 200)
      {
-         var response = JSON.parse(xhr.responseText);
+         let response = JSON.parse(xhr.responseText);
  
          document.getElementById("wifi_connect_status").innerHTML = "Connecting...";
  
@@ -161,7 +161,7 @@
          {
              document.getElementById("wifi_connect_status").innerHTML = "<h4 class='gr'>Connection Success!</h4>";
              stopWifiConnectStatusInterval();
-             getConnectInfo()
+            //  getConnectInfo()
          }
      }
  
@@ -182,9 +182,9 @@
  function connectWifi()
  {
      //get the ssid and password
-     selectedSSID = $("#connect_ssid").val();
-     pwd = $("#connect_pass").val();
-     getConnectInfo();
+     let selectedSSID = $("#connect_ssid").val();
+     let pwd = $("#connect_pass").val();
+    //  getConnectInfo();
  
      $.ajax({
          url: '/wifiConnect.json',
@@ -204,11 +204,11 @@
  
  function checkCredentials()
  {
-     errorList = "";
-     credsOk = true;
+     let errorList = "";
+     let credsOk = true;
  
-     selectedSSID = $("#connect_ssid").val();
-     pwd = $("#connect_pass").val();
+     let selectedSSID = $("#connect_ssid").val();
+     let pwd = $("#connect_pass").val();
  
      if(selectedSSID == "")
      {
@@ -222,7 +222,7 @@
          credsOk = false;
      }
  
-     if(credsOk == false)
+     if(!credsOk)
      {
          $("#wifi_connect_credentials_errors").html(errorList);
      }
@@ -239,7 +239,7 @@
   */
  function showPassword()
  {
-     var x = document.getElementById("connect_pass");
+     let x = document.getElementById("connect_pass");
      if (x.type === "password")
      {
          x.type = "text";
@@ -268,7 +268,7 @@
         $("#wifi_connect_netmask").text(data["netmask"]);
 
         $("#gateway_label").html("Gateway: ");
-        $("#wifi_connect_gateway").text(data["gateway"]);
+        $("#wifi_connect_gw").text(data["gateway"]);
 
         document.getElementById('disconnect_wifi').style.display = 'block';
     });

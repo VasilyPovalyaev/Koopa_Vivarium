@@ -38,9 +38,9 @@
 
  function update_lights()
  {
-    var checkbox = document.getElementById("lights_switch");
+    let checkbox = document.getElementById("lights_switch");
     
-    var xhr = new XMLHttpRequest();
+    let xhr = new XMLHttpRequest();
     
     if(checkbox.checked){
         xhr.open("POST", "/lightsON");
@@ -57,9 +57,9 @@
 
  function update_heater()
  {
-    var checkbox = document.getElementById("heater_switch");
+    let checkbox = document.getElementById("heater_switch");
     
-    var xhr = new XMLHttpRequest();
+    let xhr = new XMLHttpRequest();
     
     if(checkbox.checked){
         xhr.open("POST", "/heaterON");

@@ -465,7 +465,7 @@ static esp_err_t http_server_checkbox_info_handler(httpd_req_t* req)
 /**
  * Connect info handler
  */
-static esp_err_t http_server_wifi_get_connect_info_json_handler(httpd_req_t *req)
+static esp_err_t http_server_get_wifi_connect_info_json_handler(httpd_req_t *req)
 {
     ESP_LOGI(TAG, "/wifiConnectInfo.json requested");
 
@@ -476,7 +476,7 @@ static esp_err_t http_server_wifi_get_connect_info_json_handler(httpd_req_t *req
     char netmask[IP4ADDR_STRLEN_MAX];
     char gateway[IP4ADDR_STRLEN_MAX];
 
-    if (g_wifi_connect_status == HTTP_WIFI_STATUS_CONNECT_SUCCESS || g_wifi_connect_status == HTTP_WIFI_STATUS_CONNECTING)
+    if (g_wifi_connect_status == HTTP_WIFI_STATUS_CONNECT_SUCCESS)
     {
         wifi_ap_record_t wifi_data;
         ESP_ERROR_CHECK(esp_wifi_sta_get_ap_info(&wifi_data));
@@ -725,7 +725,7 @@ static httpd_handle_t http_server_configure(void)
         httpd_uri_t wifi_connect_info_json = {
             .uri = "/wifiConnectInfo.json",
             .method = HTTP_GET,
-            .handler = http_server_wifi_get_connect_info_json_handler,
+            .handler = http_server_get_wifi_connect_info_json_handler,
             .user_ctx = NULL
         };
         httpd_register_uri_handler(http_server_handle, &wifi_connect_info_json);
