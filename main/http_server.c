@@ -124,6 +124,14 @@ static void http_server_monitor(void *parameter)
                     g_wifi_connect_status = HTTP_WIFI_STATUS_CONNECT_FAILED;
                     break;
 
+                case HTTP_MSG_USER_DISCONNECT:
+                    ESP_LOGI(TAG, "HTTP_MSG_USER_DISCONNECT");
+
+
+                    g_wifi_connect_status = HTTP_WIFi_STATUS_DISCONNECTED;
+                    break;
+
+
                 case HTTP_MSG_OTA_UPDATE_SUCCESSFUL:
                     ESP_LOGI(TAG, "HTTP_MSG_OTA_UPDATE_SUCCESSFUL");
                     g_fw_update_status = OTA_UPDATE_SUCCESSFUL;
