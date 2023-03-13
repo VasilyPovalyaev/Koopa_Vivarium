@@ -14,7 +14,7 @@ typedef enum http_server_wifi_connect_status
     HTTP_WIFI_STATUS_CONNECTING,
     HTTP_WIFI_STATUS_CONNECT_FAILED,
     HTTP_WIFI_STATUS_CONNECT_SUCCESS,
-    HTTP_WIFi_STATUS_DISCONNECTED,
+    HTTP_WIFI_STATUS_DISCONNECTED,
     
 } http_server_wifi_connect_status_e;
 

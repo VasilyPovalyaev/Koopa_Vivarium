@@ -127,8 +127,7 @@ static void http_server_monitor(void *parameter)
                 case HTTP_MSG_USER_DISCONNECT:
                     ESP_LOGI(TAG, "HTTP_MSG_USER_DISCONNECT");
 
-
-                    g_wifi_connect_status = HTTP_WIFi_STATUS_DISCONNECTED;
+                    g_wifi_connect_status = HTTP_WIFI_STATUS_DISCONNECTED;
                     break;
 
 
@@ -471,6 +470,18 @@ static esp_err_t http_server_checkbox_info_handler(httpd_req_t* req)
     return ESP_OK;
 }
 /**
+ * wifi disconnect handler 
+*/
+static esp_err_t http_server_wifi_disconnect_handler(httpd_req_t* req)
+{
+    ESP_LOGI(TAG, "/wifiDisconnect.json requested");
+
+    wifi_app_send_message(WIFI_APP_MSG_USER_REQUESTED_STA_DISCONNECT);
+    
+    
+    return ESP_OK;
+}
+/**
  * Connect info handler
  */
 static esp_err_t http_server_get_wifi_connect_info_json_handler(httpd_req_t *req)
@@ -496,7 +507,7 @@ static esp_err_t http_server_get_wifi_connect_info_json_handler(httpd_req_t *req
         esp_ip4addr_ntoa(&ip_info.netmask, netmask, IP4ADDR_STRLEN_MAX);
         esp_ip4addr_ntoa(&ip_info.gw, gateway, IP4ADDR_STRLEN_MAX);
 
-        sprintf(ipInfoJSON, "{\"ip\":\"%s\",\"netmask\":\"%s\",\"gateway\":\"%s\"ap\":\"%s\"}", ip, netmask, gateway, ssid);
+        sprintf(ipInfoJSON, "{\"ip\":\"%s\",\"netmask\":\"%s\",\"gateway\":\"%s\",\"ap\":\"%s\"}", ip, netmask, gateway, ssid);
     }
     httpd_resp_set_type(req, "application/json");
     httpd_resp_send(req, ipInfoJSON, strlen(ipInfoJSON));
@@ -773,6 +784,16 @@ static httpd_handle_t http_server_configure(void)
             .user_ctx = NULL
         };
         httpd_register_uri_handler(http_server_handle, &heater_off);
+
+        //register wifi disconnect 
+        httpd_uri_t wifi_disconnect_json = {
+            .uri = "/wifiDisconnect.json",
+            .method = HTTP_DELETE,
+            .handler = http_server_wifi_disconnect_handler,
+            .user_ctx = NULL
+        };
+        httpd_register_uri_handler(http_server_handle, &wifi_disconnect_json);
+
 
 
         return http_server_handle;

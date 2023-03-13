@@ -264,7 +264,7 @@ static void wifi_app_task(void *pvParameters)
                 http_server_monitor_send_message(HTTP_MSG_WIFI_CONNECT_SUCCESS);
 
                 eventBits = xEventGroupGetBits(wifi_app_event_group);
-                if(eventBits & WIFI_CONNECTING_USING_SAVED_CREDS_BIT) //Save STA creds onlu is connecting from the http server
+                if(eventBits & WIFI_CONNECTING_USING_SAVED_CREDS_BIT) //Save STA creds only is connecting from the http server
                 {
                     xEventGroupClearBits(wifi_app_event_group, WIFI_CONNECTING_USING_SAVED_CREDS_BIT); //Clear the bits in case we want to disconnect
                 }
@@ -278,8 +278,16 @@ static void wifi_app_task(void *pvParameters)
                 }
                 break;
 
-            case WIFI_APP_USER_REQUESTED_DISCONNECT_BIT:
-                ESP_LOGI(TAG)
+            case WIFI_APP_MSG_USER_REQUESTED_STA_DISCONNECT:
+                ESP_LOGI(TAG, "WIFI_APP_MSG_USER_REQUESTED_STA_DISCONNECT");
+
+                xEventGroupSetBits(wifi_app_event_group, WIFI_APP_USER_REQUESTED_DISCONNECT_BIT);
+                
+                g_retry_number = MAX_CONNECTION_RETRIES;
+                ESP_ERROR_CHECK(esp_wifi_disconnect());
+                app_nvs_clear_sta_creds();
+
+                break;
 
             case WIFI_APP_MSG_STA_DISCONNECTED:
                 ESP_LOGI(TAG, "WIFI_APP_MSG_STA_DISCONNECTED");
@@ -293,12 +301,20 @@ static void wifi_app_task(void *pvParameters)
                 }
                 else if(eventBits & WIFI_CONNECTING_FROM_HTTP_SERVER_BIT)
                 {
-                    ESP_LOGI(TAG, "WIFI_APP_MSG_STA_DISCONNECTED: ATTEMPT FORM THE HTTP SERVER");
+                    ESP_LOGI(TAG, "WIFI_APP_MSG_STA_DISCONNECTED: ATTEMPT FROM THE HTTP SERVER");
                     xEventGroupClearBits(wifi_app_event_group, WIFI_CONNECTING_FROM_HTTP_SERVER_BIT);
                     http_server_monitor_send_message(HTTP_MSG_WIFI_CONNECT_FAIL);
                 }
-
-                http_server_monitor_send_message(HTTP_MSG_WIFI_CONNECT_FAIL);
+                else if(eventBits & WIFI_APP_USER_REQUESTED_DISCONNECT_BIT)
+                {
+                    ESP_LOGI(TAG, "WIFI_APP_USER_REQUESTED_DISCONNECT_BIT: USER REQUESTED DISCONNECTION");
+                    xEventGroupClearBits(wifi_app_event_group, WIFI_APP_USER_REQUESTED_DISCONNECT_BIT);
+                    http_server_monitor_send_message(HTTP_MSG_USER_DISCONNECT);
+                }
+                else
+                {
+                    ESP_LOGI(TAG, "WIFI_APP_MSG_STA_DISCONNECTED: ATTEMPT FAILED, CHECK WIFI AP AVAILABILITY");
+                }
                 break;
 
             default:
