@@ -30,6 +30,7 @@
 #include "mqtt_client.h"
 #include "relays.h"
 #include "mqtt.h"
+#include "DHT22.h"
 
 static const char *TAG = "MQTT_EXAMPLE";
 
@@ -61,6 +62,15 @@ void mqtt_handler(esp_mqtt_event_handle_t event)
     else if (!strcmp(key, "set_heater"))
     {
         set_heater(atoi(val));
+    }
+    else if (!strcmp(key, "set_refresh"))
+    {
+        publish_data("temp0", getTemperature(0));
+        publish_data("temp1", getTemperature(1));
+        publish_data("humidity0", getHumidity(0));
+        publish_data("humidity0", getHumidity(0));
+        publish_data("lights", get_light_state());
+        publish_data("heater", get_heater_state());
     }
 }
 
