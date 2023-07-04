@@ -1,10 +1,23 @@
 
 #include "nvs_flash.h"
+#include "esp_log.h"
 
 #include "DHT22.h"
 #include "relays.h"
 #include "wifi_app.h"
 #include "wifi_reset_button.h"
+#include "sntp_time.h"
+#include "mqtt.h"
+
+const static char *TAG = "main";
+
+void wifi_application_connected_events(void)
+{
+    ESP_LOGI(TAG, "WiFi application Connected");
+    // sntp_time_task_start();
+    sntp_time_obtain_time();
+    mqtt_start();
+}
 
 void app_main(void)
 {
@@ -30,4 +43,7 @@ void app_main(void)
 
     //Init relays
     setup_relays();    
+
+    //set wifi cb
+    wifi_app_set_callback(&wifi_application_connected_events);
 }

@@ -3,8 +3,11 @@
  */
  $(document).ready(function(){
     getDHTSensorValues();
-    getCheckboxValues();
     startDHTSensorInterval();
+    getCheckboxValues();
+    startCheckboxValuesInterval();
+    getLocalTime();
+    startLocalTimeInterval();
 });   
 
 /**
@@ -28,6 +31,12 @@
         $("#heater_switch").prop('checked', ((data["heater"] == "1") ? true : false));
     })
  }
+
+ function startCheckboxValuesInterval()
+ {
+    setInterval(getCheckboxValues, 1000);
+ }
+
  /**
   * Sets the interval for getting updated sensor values
   */
@@ -72,4 +81,19 @@
 
         xhr.send("heaterValue=0");
     }
+ }
+
+ /**
+  * Sets the interval for local time
+  */
+ function startLocalTimeInterval()
+ {
+    setInterval(getLocalTime, 1000);
+ }
+
+ function getLocalTime()
+ {
+    $.getJSON('/localTime.json', function(data) {
+        $('#local_time').text(data["time"]);
+    });
  }

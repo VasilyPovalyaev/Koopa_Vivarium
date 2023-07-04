@@ -5,7 +5,9 @@
 #include "esp_err.h"
 #include "esp_log.h"
 #include "esp_wifi.h"
+#include "esp_netif.h"
 #include "lwip/netdb.h"
+#include "lwip/dns.h"
 
 //#include "led_strip.h"
 #include "tasks_common.h"
@@ -13,13 +15,12 @@
 #include "http_server.h"
 #include "app_nvs.h"
 
-//Tag used for ESP console messages
 static const char TAG[] = "wifi_app";
 
-// Used for returning wifi configuration
+static wifi_connected_event_callback_t wifi_connected_event_cb;
+
 wifi_config_t *wifi_config = NULL;
 
-// Used to track teh number of retries when a connection attempt fails
 static int g_retry_number;
 
 /**
@@ -91,6 +92,7 @@ static void wifi_app_event_handler(void *arg, esp_event_base_t event_base, int32
 
             case WIFI_EVENT_STA_START:
                 ESP_LOGI(TAG,"WIFI_EVENT_STA_START");
+                esp_wifi_connect();
                 break;
         }
     }
@@ -279,6 +281,25 @@ static void wifi_app_task(void *pvParameters)
                 {
                     xEventGroupClearBits(wifi_app_event_group, WIFI_CONNECTING_FROM_HTTP_SERVER_BIT);
                 }
+
+                ESP_LOGW(TAG, "DNS: %s", ipaddr_ntoa(dns_getserver(0)));
+                ip_addr_t dns_ip;
+                if (ipaddr_aton("8.8.8.8", &dns_ip))
+                {
+                    dns_setserver(0, &dns_ip);
+                }else{
+                    ESP_LOGE(TAG, "Failed to set DNS");
+                }
+
+                ESP_LOGW(TAG, "DNS: %s", ipaddr_ntoa(dns_getserver(0)));
+
+
+                //check for cb
+
+                if(wifi_connected_event_cb)
+                {
+                    wifi_app_call_callback();
+                }
                 break;
 
             case WIFI_APP_MSG_USER_REQUESTED_STA_DISCONNECT:
@@ -348,6 +369,16 @@ BaseType_t wifi_app_send_message(wifi_app_message_e msgID)
 wifi_config_t* wifi_app_get_wifi_config(void)
 {
     return wifi_config;
+}
+
+void wifi_app_set_callback(wifi_connected_event_callback_t cb)
+{
+    wifi_connected_event_cb = cb;
+}
+
+void wifi_app_call_callback(void)
+{
+    wifi_connected_event_cb();
 }
 
 void wifi_app_start(void)

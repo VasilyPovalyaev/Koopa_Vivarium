@@ -1,5 +1,6 @@
 #include "relays.h"
 #include "driver/gpio.h"
+#include "mqtt.h"
 
 int light_state = 0;
 int heater_state = 0;
@@ -15,10 +16,21 @@ void setup_relays(void){
 void set_lights(int state){
     gpio_set_level(LIGHT_PIN, !state);
     light_state = state;
+
+    if(mqtt_online())
+    {
+        publish_data("lights", light_state);
+    }
 }
 void set_heater(int state){
     gpio_set_level(HEATER_PIN, !state);
     heater_state = state;
+
+    if(mqtt_online())
+    {
+        publish_data("heater", heater_state);
+    }
+
 }
 
 int get_light_state(void){return light_state;}

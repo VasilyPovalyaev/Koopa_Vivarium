@@ -5,10 +5,12 @@
 #include "freertos/FreeRTOS.h"
 #include "esp_wifi_types.h"
 
+//callback typedef
+typedef void (*wifi_connected_event_callback_t)(void);
 
 //WiFi application settings
 #define WIFI_AP_SSID            "Koopa's_Vivarium"
-#define WIFI_AP_PASSWORD        "password"
+#define WIFI_AP_PASSWORD        "red-footed-tortoise"
 #define WIFI_AP_CHANNEL         1
 #define WIFI_AP_SSID_HIDDEN     0
 #define WIFI_AP_MAX_CONNECTIONS 5
@@ -70,5 +72,15 @@ void wifi_app_start(void);
  */
 
 wifi_config_t* wifi_app_get_wifi_config(void);
+
+/**
+ * sets the callback fnc
+*/
+void wifi_app_set_callback(wifi_connected_event_callback_t cb);
+
+/**
+ * calls the cb
+*/
+void wifi_app_call_callback(void);
 
 #endif

@@ -28,6 +28,7 @@
 
 #include "DHT22.h"
 #include "tasks_common.h"
+#include "mqtt.h"
 
 // == global defines =============================================
 
@@ -38,6 +39,10 @@ float humidity0 = 0;
 float humidity1 = 0;
 float temperature0 = 0;
 float temperature1 = 0;
+float humidity0_old = 0;
+float humidity1_old = 0;
+float temperature0_old = 0;
+float temperature1_old = 0;
 
 // == set the DHT used pin=========================================
 
@@ -241,10 +246,23 @@ uint8_t bitInx = 7;
 	{
 		return DHT_CHECKSUM_ERROR;
 	}
+	//check the humidity isn't  >100 to protect against checksum slips
+
+	float check = dhtData[0];
+	check *= 0x100;
+	check += dhtData[1];
+	check /= 10;
+	if (check > 100.)
+	{
+		return DHT_READ_ERROR;
+	}
 
 	// == get humidity from Data[0] and Data[1] ==========================
 	if(idx == 0)
 	{
+		humidity0_old = humidity0;
+		temperature0_old = temperature0;
+
 		humidity0 = dhtData[0];
 		humidity0 *= 0x100;					// >> 8
 		humidity0 += dhtData[1];
@@ -262,6 +280,9 @@ uint8_t bitInx = 7;
 	}
 	else
 	{
+		humidity1_old = humidity1;
+		temperature0_old = temperature0;
+		
 		humidity1 = dhtData[0];
 		humidity1 *= 0x100;					// >> 8
 		humidity1 += dhtData[1];
@@ -291,18 +312,26 @@ static void DHT22_task0(void *pvParameter)
 
 	for (;;)
 	{
-		
-		//printf("=== Reading DHTs ===\n");
 
 		int ret1 = readDHT(0);
 
 		errorHandler(ret1);
 
-		// printf("Hum %.1f\t%.1f\n", getHumidity(0), getHumidity(1));
-		// printf("Tmp %.1f\t%.1f\n", getTemperature(0), getTemperature(1));
-
 		// Wait at least 2 seconds before reading again
 		// The interval of the whole process must be more than 2 seconds
+		if (mqtt_online())
+		{
+			//only publish if value changes
+			if(temperature0 != temperature0_old)
+			{
+				publish_data("temp0", getTemperature(0));
+			}
+			if(humidity0 != humidity0_old)
+			{
+				publish_data("humidity0", getHumidity(0));
+			}
+		}
+
 		vTaskDelay(4000 / portTICK_PERIOD_MS);
 	}
 }
@@ -313,18 +342,26 @@ static void DHT22_task1(void *pvParameter)
 
 	for (;;)
 	{
-		
-		//printf("=== Reading DHTs ===\n");
 
 		int ret1 = readDHT(1);
 
 		errorHandler(ret1);
 
-		// printf("Hum %.1f\t%.1f\n", getHumidity(0), getHumidity(1));
-		// printf("Tmp %.1f\t%.1f\n", getTemperature(0), getTemperature(1));
-
 		// Wait at least 2 seconds before reading again
 		// The interval of the whole process must be more than 2 seconds
+		if (mqtt_online())
+		{
+			//only publish if value changes
+			if(temperature0 != temperature0_old)
+			{
+				publish_data("temp1", getTemperature(0));
+			}
+			if(humidity0 != humidity0_old)
+			{
+				publish_data("humidity1", getHumidity(0));
+			}
+		}
+
 		vTaskDelay(4000 / portTICK_PERIOD_MS);
 	}
 }

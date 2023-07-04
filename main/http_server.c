@@ -11,7 +11,7 @@
 #include "tasks_common.h"
 #include "wifi_app.h"
 #include "esp_wifi_types.h"
-
+#include "sntp_time.h"
 #include "lwip/netdb.h"
 
 
@@ -31,6 +31,9 @@ static int g_wifi_connect_status = NONE;
 // Firmware update status
 
 static int g_fw_update_status = OTA_UPDATE_PENDING;
+
+//local time status
+static bool g_is_local_time_set = false;
 
 //HTTP server task handle
 static httpd_handle_t http_server_handle = NULL;
@@ -140,6 +143,11 @@ static void http_server_monitor(void *parameter)
                 case HTTP_MSG_OTA_UPDATE_FAILED:
                     ESP_LOGI(TAG, "HTTP_MSG_OTA_UPDATE_FAILED");
                     g_fw_update_status = OTA_UPDATE_FAILED;
+                    break;
+
+                case HTTP_MSG_TIME_SERVICE_INITIALISED:
+                    ESP_LOGI(TAG, "HTTP_MSG_TIME_SERVICE_INITIALISED");
+                    g_is_local_time_set = true;
                     break;
 
                 default:
@@ -482,6 +490,21 @@ static esp_err_t http_server_wifi_disconnect_handler(httpd_req_t* req)
     return ESP_OK;
 }
 /**
+ * local time handler 
+*/
+static esp_err_t http_server_local_time_handler(httpd_req_t* req)
+{
+    ESP_LOGI(TAG, "/localTime.json requested");    
+    char localTimeJSON[100] = {0};
+    
+    sprintf(localTimeJSON, "{\"time\":\"%s\"}", g_is_local_time_set ? sntp_time_get_time() : "TIME NOT SET");
+
+    httpd_resp_set_type(req, "application/json");
+    httpd_resp_send(req, localTimeJSON, strlen(localTimeJSON));
+
+    return ESP_OK;
+}
+/**
  * Connect info handler
  */
 static esp_err_t http_server_get_wifi_connect_info_json_handler(httpd_req_t *req)
@@ -793,6 +816,15 @@ static httpd_handle_t http_server_configure(void)
             .user_ctx = NULL
         };
         httpd_register_uri_handler(http_server_handle, &wifi_disconnect_json);
+
+        //register local time 
+        httpd_uri_t local_time_json = {
+            .uri = "/localTime.json",
+            .method = HTTP_GET,
+            .handler = http_server_local_time_handler,
+            .user_ctx = NULL
+        };
+        httpd_register_uri_handler(http_server_handle, &local_time_json);
 
 
 

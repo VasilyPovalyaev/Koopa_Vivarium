@@ -120,6 +120,10 @@ input:checked + .slider:before {
     border-radius: 50%;
 }
 
+#local_time {
+    display:inline;
+    color: #2196F3;
+}
 
 input[type="button"] {
 	font-size: 12px;
