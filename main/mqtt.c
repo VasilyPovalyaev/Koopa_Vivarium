@@ -31,6 +31,7 @@
 #include "relays.h"
 #include "mqtt.h"
 #include "DHT22.h"
+#include "sntp_time.h"
 
 static const char *TAG = "MQTT_EXAMPLE";
 
@@ -72,6 +73,11 @@ void mqtt_handler(esp_mqtt_event_handle_t event)
         publish_data("lights", get_light_state());
         publish_data("heater", get_heater_state());
     }
+    else if (!strcmp(key, "set_time"))
+    {
+        char *time = sntp_time_get_time();
+        esp_mqtt_client_publish(client, MQTT_TOPIC, time, strlen(time),0,0);
+    }
 }
 
 void publish_data(char* key, float value)
@@ -85,7 +91,7 @@ void publish_data(char* key, float value)
     
     strcat(payload, val);
     
-    esp_mqtt_client_publish(client, TOPIC, payload, strlen(payload), 0, 0);
+    esp_mqtt_client_publish(client, MQTT_TOPIC, payload, strlen(payload), 0, 0);
 }
 
 /*
@@ -102,32 +108,22 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
 {
     ESP_LOGD(TAG, "Event dispatched from event loop base=%s, event_id=%" PRIi32 "", base, event_id);
     esp_mqtt_event_handle_t event = event_data;
-    esp_mqtt_client_handle_t client = event->client;
-    int msg_id;
     switch ((esp_mqtt_event_id_t)event_id) {
     case MQTT_EVENT_CONNECTED:
         ESP_LOGI(TAG, "MQTT_EVENT_CONNECTED");
-
-        msg_id = esp_mqtt_client_subscribe(client, TOPIC, 0);
-        ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msg_id);
-
         _mqtt_online = true;
         break;
 
     case MQTT_EVENT_DISCONNECTED:
         ESP_LOGI(TAG, "MQTT_EVENT_DISCONNECTED");
+        _mqtt_online = false;
         break;
 
     case MQTT_EVENT_SUBSCRIBED:
-        ESP_LOGI(TAG, "MQTT_EVENT_SUBSCRIBED, msg_id=%d", event->msg_id);
-        msg_id = esp_mqtt_client_publish(client, "/topic/qos0", "data", 0, 0, 0);
-        ESP_LOGI(TAG, "sent publish successful, msg_id=%d", msg_id);
         break;
     case MQTT_EVENT_UNSUBSCRIBED:
-        ESP_LOGI(TAG, "MQTT_EVENT_UNSUBSCRIBED, msg_id=%d", event->msg_id);
         break;
     case MQTT_EVENT_PUBLISHED:
-        ESP_LOGI(TAG, "MQTT_EVENT_PUBLISHED, msg_id=%d", event->msg_id);
         break;
     case MQTT_EVENT_DATA:
         ESP_LOGI(TAG, "MQTT_EVENT_DATA");
@@ -152,7 +148,7 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
 void mqtt_start(void)
 {
     esp_mqtt_client_config_t mqtt_cfg = {
-        .broker.address.uri = "mqtt://ec2-35-176-90-64.eu-west-2.compute.amazonaws.com",
+        .broker.address.uri = MQTT_BROKER,
     };
 
     client = esp_mqtt_client_init(&mqtt_cfg);
