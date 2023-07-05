@@ -281,7 +281,7 @@ uint8_t bitInx = 7;
 	else
 	{
 		humidity1_old = humidity1;
-		temperature0_old = temperature0;
+		temperature1_old = temperature1;
 		
 		humidity1 = dhtData[0];
 		humidity1 *= 0x100;					// >> 8
@@ -352,13 +352,13 @@ static void DHT22_task1(void *pvParameter)
 		if (mqtt_online())
 		{
 			//only publish if value changes
-			if(temperature0 != temperature0_old)
+			if(temperature1 != temperature1_old)
 			{
-				publish_data("temp1", getTemperature(0));
+				publish_data("temp1", getTemperature(1));
 			}
-			if(humidity0 != humidity0_old)
+			if(humidity1 != humidity1_old)
 			{
-				publish_data("humidity1", getHumidity(0));
+				publish_data("humidity1", getHumidity(1));
 			}
 		}
 
