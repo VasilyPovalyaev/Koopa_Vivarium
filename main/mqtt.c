@@ -87,7 +87,7 @@ void publish_data(char* key, float value)
     memcpy(payload+4, key, strlen(key)+1);
 
     char val[12];
-    snprintf(val, 12, " %f", value);
+    snprintf(val, 12, " %.2f", value);
     
     strcat(payload, val);
     
