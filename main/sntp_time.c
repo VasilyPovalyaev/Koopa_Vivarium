@@ -82,6 +82,9 @@ char* sntp_time_get_time(void)
     if(time_info.tm_year < (2022 - 1900))
     {
         ESP_LOGI(TAG, "Time not set yet");
+        setenv("TZ", "GMT0BST,M3.5.0/01,M10.5.0/02", 1);
+        tzset();
+        sntp_time_init_sntp();
     }
     else
     {
